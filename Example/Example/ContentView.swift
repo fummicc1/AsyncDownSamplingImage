@@ -27,7 +27,7 @@ struct ContentView: View {
         VStack {
             ScrollView {
                 LazyVGrid(columns: [.init(), .init()]) {
-                    ForEach(0..<1000, id: \.self) { _ in
+                    ForEach(0..<100, id: \.self) { _ in
                         AsyncDownSamplingImage(
                             url: $url,
                             downsampleSize: size
@@ -51,7 +51,7 @@ struct ContentView: View {
         VStack {
             ScrollView {
                 LazyVGrid(columns: [.init(), .init()]) {
-                    ForEach(0..<1000, id: \.self) { _ in
+                    ForEach(0..<100, id: \.self) { _ in
                         AsyncImage(url: url) { phase in
                             switch phase {
                             case .empty:
