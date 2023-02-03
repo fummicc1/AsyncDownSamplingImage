@@ -9,7 +9,7 @@ struct DownSampling {
     }
 
     static func perform(at url: URL, size: CGSize, scale: CGFloat = 1) async throws -> CGImage {
-        let imageSourceOption = [kCGImageSourceShouldCache: false] as CFDictionary
+        let imageSourceOption = [kCGImageSourceShouldCache: true] as CFDictionary
         guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, imageSourceOption) else {
             throw Error.failedToFetchImage
         }
