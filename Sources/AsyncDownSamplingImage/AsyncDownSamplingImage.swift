@@ -4,12 +4,14 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
 
     @Binding public var url: URL?
     @Binding public var downsampleSize: CGSize
+    @Environment(\.redactionReasons) var reasons
 
     public let content: (Image) -> Content
     public let placeholder: (() -> Placeholder)?
     public let fail: (Error) -> Fail
 
     @State private var status: Status = .idle
+    @State private var loadingOpacity: CGFloat = 1.0
 
     public init(
         url: Binding<URL?>,
@@ -24,6 +26,10 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
         self.placeholder = placeholder
         self.fail = fail
         self.status = status
+
+        if let url = self.url {
+            startLoading(url: url)
+        }
     }
 
     public var body: some View {
@@ -48,14 +54,12 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
     var imageView: some View {
         switch status {
         case .idle:
-            VStack{}
-                .redacted(reason: .placeholder)
+            loadingView
         case .loading:
             if let placeholder {
                 placeholder()
             } else {
-                ProgressView()
-                    .progressViewStyle(.circular)
+                loadingView
             }
         case .fail(let error):
             fail(error)
@@ -63,6 +67,25 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
             content(image)
         }
         EmptyView()
+    }
+
+    var loadingView: some View {
+        Image(systemName: "plus") // any image is okay
+            .resizable()
+            .cornerRadius(2)
+            .opacity(loadingOpacity)
+            .animation(
+                Animation.easeIn(duration: 0.5).repeatForever(autoreverses: true),
+                value: loadingOpacity
+            )
+            .frame(
+                width: downsampleSize.width,
+                height: downsampleSize.height
+            )
+            .redacted(reason: .placeholder)
+            .onAppear {
+                loadingOpacity = abs(1.0 - loadingOpacity)
+            }
     }
 
     func startLoading(url: URL) {
