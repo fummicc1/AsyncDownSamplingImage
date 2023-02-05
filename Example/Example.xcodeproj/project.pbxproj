@@ -9,20 +9,22 @@
 /* Begin PBXBuildFile section */
 		D30592B4298C9F830060D5EE /* AsyncDownSamplingImage in Frameworks */ = {isa = PBXBuildFile; productRef = D30592B3298C9F830060D5EE /* AsyncDownSamplingImage */; };
 		D3E99FFE298C9EEF006E08E2 /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E99FFD298C9EEF006E08E2 /* ExampleApp.swift */; };
-		D3E9A000298C9EEF006E08E2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E99FFF298C9EEF006E08E2 /* ContentView.swift */; };
+		D3E9A000298C9EEF006E08E2 /* DefaultContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E99FFF298C9EEF006E08E2 /* DefaultContentView.swift */; };
 		D3E9A002298C9EF1006E08E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3E9A001298C9EF1006E08E2 /* Assets.xcassets */; };
 		D3E9A006298C9EF1006E08E2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3E9A005298C9EF1006E08E2 /* Preview Assets.xcassets */; };
+		D3F22F9B29900A2E005365E3 /* DownsampleContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3F22F9A29900A2E005365E3 /* DownsampleContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D30592B1298C9F7F0060D5EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D3E99FFA298C9EEF006E08E2 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3E99FFD298C9EEF006E08E2 /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
-		D3E99FFF298C9EEF006E08E2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D3E99FFF298C9EEF006E08E2 /* DefaultContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultContentView.swift; sourceTree = "<group>"; };
 		D3E9A001298C9EF1006E08E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D3E9A003298C9EF1006E08E2 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		D3E9A005298C9EF1006E08E2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D3E9A00D298C9F06006E08E2 /* AsyncDownSamplingImage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = AsyncDownSamplingImage; path = ..; sourceTree = "<group>"; };
+		D3F22F9A29900A2E005365E3 /* DownsampleContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownsampleContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,11 +67,12 @@
 		D3E99FFC298C9EEF006E08E2 /* Example */ = {
 			isa = PBXGroup;
 			children = (
-				D30592B1298C9F7F0060D5EE /* Info.plist */,
-				D3E99FFD298C9EEF006E08E2 /* ExampleApp.swift */,
-				D3E99FFF298C9EEF006E08E2 /* ContentView.swift */,
-				D3E9A001298C9EF1006E08E2 /* Assets.xcassets */,
 				D3E9A003298C9EF1006E08E2 /* Example.entitlements */,
+				D30592B1298C9F7F0060D5EE /* Info.plist */,
+				D3E99FFF298C9EEF006E08E2 /* DefaultContentView.swift */,
+				D3F22F9A29900A2E005365E3 /* DownsampleContentView.swift */,
+				D3E99FFD298C9EEF006E08E2 /* ExampleApp.swift */,
+				D3E9A001298C9EF1006E08E2 /* Assets.xcassets */,
 				D3E9A004298C9EF1006E08E2 /* Preview Content */,
 			);
 			path = Example;
@@ -164,8 +167,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3E9A000298C9EEF006E08E2 /* ContentView.swift in Sources */,
+				D3E9A000298C9EEF006E08E2 /* DefaultContentView.swift in Sources */,
 				D3E99FFE298C9EEF006E08E2 /* ExampleApp.swift in Sources */,
+				D3F22F9B29900A2E005365E3 /* DownsampleContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
