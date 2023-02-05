@@ -13,11 +13,18 @@ with downsampling, we can reduce the huge amount of memory use like the below.
 
 Moreover, the more the number of images increases, the more we can get the benefit.
 
-Below is a comparision when I scrolled and show 100 high resolution images (1000×1000px).
+Below is a comparision when I scrolled and show 100/1000 high resolution images (1000×1000px).
+With AsyncDownSamplingImage, we changed Image size `1000x1000` into `160x160` which is same size as rendered `Image`.
 
-|default AsyncImage| AsyncDownSamplingImage (×10~ efficient) |
+|default AsyncImage| 100 AsyncDownSamplingImages (×10~ efficient) |
 |---|---|
 |<img width="480" alt="Screenshot 2023-02-04 at 2 11 31" src="https://user-images.githubusercontent.com/44002126/216666328-6d4ea99c-45d4-48d0-960d-b162a9155413.png">|<img width="480" alt="Screenshot 2023-02-04 at 2 12 06" src="https://user-images.githubusercontent.com/44002126/216666337-0e079274-5a55-4469-b9ae-4c4dfc5b838d.png">|
+
+|default AsyncImage| 1000 AsyncDownSamplingImages (×30~ efficient) |
+|---|---|
+|<img width="480" alt="Screenshot 2023-02-06 at 1 08 46" src="https://user-images.githubusercontent.com/44002126/216831204-06a8dc04-6bd6-44df-8134-290f150abca0.png">|<img width="480" alt="Screenshot 2023-02-06 at 1 07 29" src="https://user-images.githubusercontent.com/44002126/216831199-c5a66b8e-fc1a-4131-a5c5-2f7d57b17a1b.png">|
+
+
 
 
 
@@ -30,14 +37,14 @@ public init(
   url: Binding<URL?>,
   downsampleSize: Binding<CGSize>,
   content: @escaping (Image) -> Content,
-  placeholder: (() -> Placeholder)?,
+  placeholder: @escaping () -> Placeholder,
   fail: @escaping (Error) -> Fail
 )
 ```
 
 ```swift
 public init(
-  url: Binding<URL?>,
+  url: URL?,
   downsampleSize: Binding<CGSize>,
   content: @escaping (Image) -> Content,
   fail: @escaping (Error) -> Fail
@@ -46,7 +53,7 @@ public init(
 
 ```swift
 public init(
-  url: Binding<URL?>,
+  url: URL?,
   downsampleSize: CGSize,
   content: @escaping (Image) -> Content,
   fail: @escaping (Error) -> Fail
@@ -63,17 +70,15 @@ You can use `AsyncDownSamplingImage` in the following way.
 ...
 
 AsyncDownSamplingImage(
-  url: $url,
+  url: url,
   downsampleSize: size
 ) { image in
-  image
-      .resizable()
+  image.resizable()
       .frame(width: size.width, height: size.height)
 } fail: { error in
   Text("Error: \(error.localizedDescription)")
 }
 ```
-
 
 
 # Contributing
