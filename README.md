@@ -2,6 +2,8 @@
 
 `AsyncDownSamplingImage` is a SwiftUI component that has similar interface to original [AsyncImage](https://developer.apple.com/documentation/swiftui/asyncimage) and can perform downsampling so that we can reduce the memory buffer to store image data fetched from a server.
 
+<img src="https://github.com/fummicc1/AsyncDownSamplingImage/assets/44002126/254ee84d-1e08-4a61-b507-8f78f2e1d6d3" width="320px">
+
 # Impact of Downsampling
 
 with downsampling, we can reduce the huge amount of memory use like the below.
