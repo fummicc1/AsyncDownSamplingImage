@@ -1,12 +1,36 @@
 import SwiftUI
 
+
+private enum LoadingOpacityEdge {
+    case upperBound
+    case lowerBound
+
+    var value: Double {
+        switch self {
+        case .upperBound:
+            return 1
+        case .lowerBound:
+            return 0.3
+        }
+    }
+
+    mutating func toggle() {
+        switch self {
+        case .upperBound:
+            self = .lowerBound
+        case .lowerBound:
+            self = .upperBound
+        }
+    }
+}
+
 /// AsyncDownSamplingImage is a Image View that can perform downsampling and use less memory use than `AsyncImage`.
 ///
 /// About generics type:
 ///
-///     - Content: View which appears when state is Successful.
-///     - Placeholder: View which appears when state is Loading.
-///     - Fail: View which appears when state is Failed.
+///    - Content: View which appears when state is Successful.
+///    - Placeholder: View which appears when state is Loading.
+///    - Fail: View which appears when state is Failed.
 public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: View>: View {
 
     /// resource URL where you would like to fetch an image.
@@ -24,7 +48,7 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
     public let fail: (Error) -> Fail
 
     @State private var status: Status = .idle
-    @State private var loadingOpacity: CGFloat = 1.0
+    @State private var loadingOpacity: LoadingOpacityEdge = .upperBound
 
     /// Standard initializer
     ///
@@ -79,19 +103,18 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
             }
         case .failed(let error):
             fail(error)
-        case .loaded(let image):
+        case .loaded(let image), .reloading(let image):
             content(image)
         }
-        EmptyView()
     }
 
     var loadingView: some View {
         Image(systemName: "plus") // any image is okay
             .resizable()
             .cornerRadius(2)
-            .opacity(loadingOpacity)
+            .opacity(loadingOpacity.value)
             .animation(
-                Animation.easeIn(duration: 0.5).repeatForever(autoreverses: true),
+                Animation.easeInOut(duration: 0.7).repeatForever(autoreverses: true),
                 value: loadingOpacity
             )
             .frame(
@@ -100,12 +123,16 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
             )
             .redacted(reason: .placeholder)
             .onAppear {
-                loadingOpacity = abs(1.0 - loadingOpacity)
+                loadingOpacity.toggle()
             }
     }
 
     func startLoading(url: URL) {
-        status = .loading
+        if case Status.loaded(let image) = status {
+            status = .reloading(image)
+        } else {
+            status = .loading
+        }
         Task {
             do {
                 let cgImage = try await DownSampling.perform(
@@ -125,6 +152,7 @@ extension AsyncDownSamplingImage {
     enum Status {
         case idle
         case loading
+        case reloading(Image)
         case failed(Error)
         case loaded(Image)
     }
