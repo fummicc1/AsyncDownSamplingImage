@@ -1,24 +1,27 @@
 import Foundation
 import ImageIO
 
-/// reference: https://medium.com/@zippicoder/downsampling-images-for-better-memory-consumption-and-uicollectionview-performance-35e0b4526425
 struct DownSampling {
     enum Error: LocalizedError {
         case failedToFetchImage
         case failedToDownsample
     }
 
-    static func perform(at url: URL, size: CGSize, scale: CGFloat = 1) async throws -> CGImage {
+    static func perform(
+        at url: URL,
+        size: DownSamplingSize,
+        scale: CGFloat = 1
+    ) async throws -> CGImage {
         let imageSourceOption = [kCGImageSourceShouldCache: true] as CFDictionary
         guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, imageSourceOption) else {
             throw Error.failedToFetchImage
         }
 
-        let maxDimensionsInPixels = max(size.width, size.height) * scale
+        let maxDimensionsInPixels = size.maxDimensionsInPixels
 
         let downsampledOptions = [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
-            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceShouldCache: true,
             kCGImageSourceCreateThumbnailWithTransform: true,
             kCGImageSourceThumbnailMaxPixelSize: maxDimensionsInPixels,
         ] as CFDictionary
@@ -30,5 +33,18 @@ struct DownSampling {
             throw Error.failedToDownsample
         }
         return downsampledImage
+    }
+}
+
+fileprivate extension DownSamplingSize {
+    var maxDimensionsInPixels: Double {
+        switch self {
+        case .size(let cGSize, let scale):
+            max(cGSize.width, cGSize.height) * scale
+        case .width(let double, let scale):
+            double * scale
+        case .height(let double, let scale):
+            double * scale
+        }
     }
 }
