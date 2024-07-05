@@ -95,3 +95,7 @@ Pull requests, bug reports and feature requests are welcome 🚀
 # License
 
 [MIT LICENSE](https://github.com/fummicc1/AsyncDownSamplingImage/blob/main/LICENSE)
+
+# Reference
+
+- https://medium.com/@zippicoder/downsampling-images-for-better-memory-consumption-and-uicollectionview-performance-35e0b4526425
