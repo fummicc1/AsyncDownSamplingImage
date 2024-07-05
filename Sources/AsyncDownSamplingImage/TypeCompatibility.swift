@@ -1,11 +1,6 @@
 #if os(iOS)
 import UIKit
 typealias ImageType = UIImage
-extension ImageType {
-    convenience init(cgImage: CGImage, size: CGSize) {
-        self.init(cgImage: cgImage)
-    }
-}
 #elseif os(macOS)
 import AppKit
 typealias ImageType = NSImage
