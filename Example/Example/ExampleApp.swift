@@ -11,8 +11,26 @@ import SwiftUI
 struct ExampleApp: App {
     var body: some Scene {
         WindowGroup {
-            DefaultContentView()
-            DownsampleContentView()
+            TabView {
+                VStack {
+                    StandardView_Grid()
+                    DownsampleGridView()
+                }
+                .tabItem {
+                    Image(systemName: "1.circle")
+                    Text("Grid")
+                }
+                .tag("Grid")
+                VStack {
+                    StandardView_VStack()
+                    DownSamplingVStackView()
+                }
+                .tabItem {
+                    Image(systemName: "2.circle")
+                    Text("VStack")
+                }
+                .tag("VStack")
+            }
         }
     }
 }
