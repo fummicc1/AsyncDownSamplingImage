@@ -1,7 +1,7 @@
 import SwiftUI
 import AsyncDownSamplingImage
 
-struct DownsampleContentView: View {
+struct DownsampleGridView: View {
 
     @State private var url = URL(string: "https://picsum.photos/1000")
     @State private var size: CGSize = .init(width: 160, height: 160)
@@ -14,11 +14,11 @@ struct DownsampleContentView: View {
                     ForEach(0..<1000, id: \.self) { _ in
                         AsyncDownSamplingImage(
                             url: url,
-                            downsampleSize: size
+                            downsampleSize: .size(size)
                         ) { image in
                             image.resizable()
                                 .frame(width: size.width, height: size.height)
-                        } fail: { error in
+                        } onFail: { error in
                             Text("Error: \(error.localizedDescription)")
                         }
                     }
@@ -31,6 +31,6 @@ struct DownsampleContentView: View {
 
 struct DownsampleContentView_Previews: PreviewProvider {
     static var previews: some View {
-        DownsampleContentView()
+        DownsampleGridView()
     }
 }

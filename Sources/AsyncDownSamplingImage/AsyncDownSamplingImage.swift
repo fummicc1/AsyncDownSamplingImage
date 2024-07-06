@@ -25,11 +25,11 @@ private enum LoadingOpacityEdge {
 }
 
 public enum DownSamplingSize {
-    case size(CGSize, scale: Double)
-    case width(Double, scale: Double)
-    case height(Double, scale: Double)
+    case size(CGSize, scale: Double = 1)
+    case width(Double, scale: Double = 1)
+    case height(Double, scale: Double = 1)
 
-    var width: Double? {
+    public var width: Double? {
         switch self {
         case .size(let cGSize, _):
             cGSize.width
@@ -40,7 +40,7 @@ public enum DownSamplingSize {
         }
     }
 
-    var height: Double? {
+    public var height: Double? {
         switch self {
         case .size(let cGSize, _):
             cGSize.height

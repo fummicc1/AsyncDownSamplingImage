@@ -12,7 +12,7 @@ struct ExampleApp: App {
     var body: some Scene {
         WindowGroup {
             DefaultContentView()
-            DownsampleContentView()
+            DownsampleGridView()
         }
     }
 }
