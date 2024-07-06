@@ -255,14 +255,14 @@ extension AsyncDownSamplingImage {
         url: URL?,
         downsampleSize: DownSamplingSize,
         content: @escaping (Image) -> Content,
-        placeholder: @escaping () -> Placeholder,
-        fail: @escaping (any Error) -> Fail
+        onLoading: @escaping () -> Placeholder,
+        onFail: @escaping (any Error) -> Fail
     ) {
         self._url = .constant(url)
         self._downsampleSize = .constant(downsampleSize)
         self.content = content
-        self.onLoading = placeholder
-        self.onFail = fail
+        self.onLoading = onLoading
+        self.onFail = onFail
         self.status = status
     }
 }

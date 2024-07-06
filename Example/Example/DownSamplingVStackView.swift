@@ -21,7 +21,9 @@ struct DownSamplingVStackView: View {
                     ForEach(0..<1000, id: \.self) { _ in
                         AsyncDownSamplingImage(
                             url: url,
-                            downsampleSize: .height(Util.VStack.bufferedImageHeight)
+                            downsampleSize: .height(
+                                Util.VStack.bufferedImageHeight
+                            )
                         ) { image in
                             image.resizable()
                                 .aspectRatio(contentMode: .fit)
