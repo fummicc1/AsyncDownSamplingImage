@@ -1,27 +1,31 @@
+//
+//  DownSamplingVStackView.swift
+//  Example
+//
+//  Created by Fumiya Tanaka on 2024/07/06.
+//
+
 import SwiftUI
 import AsyncDownSamplingImage
 
-struct DownsampleGridView: View {
-
-    @State private var url = Util.Grid.url
-    @State private var size: CGSize = .init(width: 160, height: 160)
+struct DownSamplingVStackView: View {
+    
+    @State private var url = Util.VStack.url
+    @State private var height: Double = 240
 
     var body: some View {
         VStack {
             Text("AsyncDownSamplingImage")
             ScrollView {
-                LazyVGrid(columns: [.init(), .init()]) {
+                LazyVStack() {
                     ForEach(0..<1000, id: \.self) { _ in
                         AsyncDownSamplingImage(
                             url: url,
-                            downsampleSize: .size(Util.Grid.bufferedImageSize)
+                            downsampleSize: .height(Util.VStack.bufferedImageHeight)
                         ) { image in
                             image.resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(
-                                    width: size.width,
-                                    height: size.height
-                                )
+                                .frame(height: height)
                         } onFail: { error in
                             Text("Error: \(error.localizedDescription)")
                         }
@@ -33,8 +37,6 @@ struct DownsampleGridView: View {
     }
 }
 
-struct DownsampleContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        DownsampleGridView()
-    }
+#Preview {
+    DownSamplingVStackView()
 }

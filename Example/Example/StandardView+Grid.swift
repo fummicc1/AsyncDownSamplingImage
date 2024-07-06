@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct DefaultContentView: View {
+struct StandardView_Grid: View {
 
-    @State private var url = URL(string: "https://picsum.photos/1000")
+    @State private var url = Util.Grid.url
     @State private var size: CGSize = .init(width: 160, height: 160)
 
     var body: some View {
@@ -19,7 +19,11 @@ struct DefaultContentView: View {
                                 Text("Error: \(error.localizedDescription)")
                             case .success(let image):
                                 image.resizable()
-                                    .frame(width: size.width, height: size.height)
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(
+                                        width: size.width,
+                                        height: size.height
+                                    )
                             @unknown default:
                                 fatalError()
                             }
@@ -32,8 +36,6 @@ struct DefaultContentView: View {
     }
 }
 
-struct DefaultContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        DefaultContentView()
-    }
+#Preview {
+    StandardView_Grid()
 }
