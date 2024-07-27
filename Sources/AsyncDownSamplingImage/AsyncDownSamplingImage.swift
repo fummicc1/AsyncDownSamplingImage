@@ -1,12 +1,78 @@
 import SwiftUI
 
+
+private enum LoadingOpacityEdge {
+    case upperBound
+    case lowerBound
+
+    var value: Double {
+        switch self {
+        case .upperBound:
+            return 1
+        case .lowerBound:
+            return 0.3
+        }
+    }
+
+    mutating func toggle() {
+        switch self {
+        case .upperBound:
+            self = .lowerBound
+        case .lowerBound:
+            self = .upperBound
+        }
+    }
+}
+
+public enum DownSamplingSize {
+    case size(CGSize, scale: Double = 1)
+    case width(Double, scale: Double = 1)
+    case height(Double, scale: Double = 1)
+
+    public var width: Double? {
+        switch self {
+        case .size(let cGSize, _):
+            cGSize.width
+        case .width(let double, _):
+            double
+        case .height:
+            nil
+        }
+    }
+
+    public var height: Double? {
+        switch self {
+        case .size(let cGSize, _):
+            cGSize.height
+        case .width:
+            nil
+        case .height(let double, _):
+            double
+        }
+    }
+
+    var size: (width: CGFloat?, height: CGFloat?) {
+        let width: CGFloat? = if let width {
+            width
+        } else {
+            nil
+        }
+        let height: CGFloat? = if let height {
+            height
+        } else {
+            nil
+        }
+        return (width, height)
+    }
+}
+
 /// AsyncDownSamplingImage is a Image View that can perform downsampling and use less memory use than `AsyncImage`.
 ///
 /// About generics type:
 ///
-///     - Content: View which appears when state is Successful.
-///     - Placeholder: View which appears when state is Loading.
-///     - Fail: View which appears when state is Failed.
+///    - Content: View which appears when state is Successful.
+///    - Placeholder: View which appears when state is Loading.
+///    - Fail: View which appears when state is Failed.
 public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: View>: View {
 
     /// resource URL where you would like to fetch an image.
@@ -14,33 +80,39 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
     /// Example: https://via.placeholder.com/1000
     @Binding public var url: URL?
     /// image size to perform downsampling.
-    @Binding public var downsampleSize: CGSize
+    @Binding public var downsampleSize: DownSamplingSize
 
     /// View which appears when `status` is `Status.loaded`.
     public let content: (Image) -> Content
     /// View which appears when `status` is `Status.loading`.
-    public let placeholder: (() -> Placeholder)?
+    public let onLoading: (() -> Placeholder)?
     /// View which appears when `status` is `Status.failed`.
-    public let fail: (Error) -> Fail
+    public let onFail: (any Error) -> Fail
 
     @State private var status: Status = .idle
-    @State private var loadingOpacity: CGFloat = 1.0
+    @State private var loadingOpacity: LoadingOpacityEdge = .upperBound
 
-    /// Standard initializer
+    /// A initializer that requires exact downSampling size.
     ///
-    /// - Note: You can also use simpler initializer.
+    /// - Parameters:
+    ///     - url: a resource url which should be downsampled.
+    ///     - downSamplingSize: final image buffer size after downsampling.
+    ///         choose from ``DownSamplingSize.width``, ``DownSamplingSize.height`` or ``DownSamplingSize.size``
+    ///     - content: UI builder which takes ``Image`` as an argument after image is fetched and downsampled.
+    ///     - onLoading: UI builder used when ``Image`` is loading or in downsampling phase.
+    ///     - onFail: UI builder used when something wrong happened in downsampling phase.
     public init(
         url: Binding<URL?>,
-        downsampleSize: Binding<CGSize>,
+        downsampleSize: Binding<DownSamplingSize>,
         content: @escaping (Image) -> Content,
-        placeholder: @escaping () -> Placeholder,
-        fail: @escaping (Error) -> Fail
+        onLoading: @escaping () -> Placeholder,
+        onFail: @escaping (any Error) -> Fail
     ) {
         self._url = url
         self._downsampleSize = downsampleSize
         self.content = content
-        self.placeholder = placeholder
-        self.fail = fail
+        self.onLoading = onLoading
+        self.onFail = onFail
         self.status = status
 
         if let url = self.url {
@@ -49,21 +121,19 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
     }
 
     public var body: some View {
-        Group {
-            imageView
-        }
-        .onAppear {
-            if case Status.idle = status, let url {
+        imageView
+            .onAppear {
+                if case Status.idle = status, let url {
+                    startLoading(url: url)
+                }
+            }
+            .onChange(of: url) { url in
+                guard let url else {
+                    status = .idle
+                    return
+                }
                 startLoading(url: url)
             }
-        }
-        .onChange(of: url) { url in
-            guard let url else {
-                status = .idle
-                return
-            }
-            startLoading(url: url)
-        }
     }
 
     @ViewBuilder
@@ -72,47 +142,52 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
         case .idle:
             loadingView
         case .loading:
-            if let placeholder {
-                placeholder()
+            if let onLoading {
+                onLoading()
             } else {
                 loadingView
             }
         case .failed(let error):
-            fail(error)
-        case .loaded(let image):
+            onFail(error)
+        case .loaded(let image), .reloading(let image):
             content(image)
         }
-        EmptyView()
     }
 
     var loadingView: some View {
-        Image(systemName: "plus") // any image is okay
+        return Image(systemName: "plus") // any image is okay
             .resizable()
             .cornerRadius(2)
-            .opacity(loadingOpacity)
+            .opacity(loadingOpacity.value)
             .animation(
-                Animation.easeIn(duration: 0.5).repeatForever(autoreverses: true),
+                Animation.easeInOut(duration: 0.7).repeatForever(autoreverses: true),
                 value: loadingOpacity
             )
             .frame(
-                width: downsampleSize.width,
-                height: downsampleSize.height
+                width: downsampleSize.size.width,
+                height: downsampleSize.size.height
             )
             .redacted(reason: .placeholder)
             .onAppear {
-                loadingOpacity = abs(1.0 - loadingOpacity)
+                loadingOpacity.toggle()
             }
     }
 
     func startLoading(url: URL) {
-        status = .loading
+        if case Status.loaded(let image) = status {
+            status = .reloading(image)
+        } else {
+            status = .loading
+        }
         Task {
             do {
                 let cgImage = try await DownSampling.perform(
                     at: url,
                     size: downsampleSize
                 )
-                let image = ImageType(cgImage: cgImage, size: downsampleSize)
+                let image = ImageType(
+                    cgImage: cgImage
+                )
                 status = .loaded(Image(imageType: image))
             } catch {
                 status = .failed(error)
@@ -125,6 +200,7 @@ extension AsyncDownSamplingImage {
     enum Status {
         case idle
         case loading
+        case reloading(Image)
         case failed(Error)
         case loaded(Image)
     }
@@ -134,59 +210,59 @@ extension AsyncDownSamplingImage {
 extension AsyncDownSamplingImage {
     public init(
         url: URL?,
-        downsampleSize: Binding<CGSize>,
+        downsampleSize: Binding<DownSamplingSize>,
         content: @escaping (Image) -> Content,
-        fail: @escaping (Error) -> Fail
+        onFail: @escaping (any Error) -> Fail
     ) where Placeholder == EmptyView {
         self._url = .constant(url)
         self._downsampleSize = downsampleSize
         self.content = content
-        self.placeholder = nil
-        self.fail = fail
+        self.onLoading = nil
+        self.onFail = onFail
         self.status = status
     }
 
     public init(
         url: URL?,
-        downsampleSize: CGSize,
+        downsampleSize: DownSamplingSize,
         content: @escaping (Image) -> Content,
-        fail: @escaping (Error) -> Fail
+        onFail: @escaping (any Error) -> Fail
     ) where Placeholder == EmptyView {
         self._url = .constant(url)
         self._downsampleSize = .constant(downsampleSize)
         self.content = content
-        self.placeholder = nil
-        self.fail = fail
+        self.onLoading = nil
+        self.onFail = onFail
         self.status = status
     }
 
     public init(
         url: URL?,
-        downsampleSize: Binding<CGSize>,
+        downsampleSize: Binding<DownSamplingSize>,
         content: @escaping (Image) -> Content,
         placeholder: @escaping () -> Placeholder,
-        fail: @escaping (Error) -> Fail
+        onFail: @escaping (any Error) -> Fail
     ) where Placeholder == EmptyView {
         self._url = .constant(url)
         self._downsampleSize = downsampleSize
         self.content = content
-        self.placeholder = placeholder
-        self.fail = fail
+        self.onLoading = placeholder
+        self.onFail = onFail
         self.status = status
     }
 
     public init(
         url: URL?,
-        downsampleSize: CGSize,
+        downsampleSize: DownSamplingSize,
         content: @escaping (Image) -> Content,
-        placeholder: @escaping () -> Placeholder,
-        fail: @escaping (Error) -> Fail
+        onLoading: @escaping () -> Placeholder,
+        onFail: @escaping (any Error) -> Fail
     ) {
         self._url = .constant(url)
         self._downsampleSize = .constant(downsampleSize)
         self.content = content
-        self.placeholder = placeholder
-        self.fail = fail
+        self.onLoading = onLoading
+        self.onFail = onFail
         self.status = status
     }
 }
