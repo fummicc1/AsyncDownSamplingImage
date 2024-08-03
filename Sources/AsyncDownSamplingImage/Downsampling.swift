@@ -1,13 +1,13 @@
 import Foundation
 import ImageIO
 
-struct DownSampling {
-    enum Error: LocalizedError {
+public struct DownSampling {
+    public enum Error: LocalizedError {
         case failedToFetchImage
         case failedToDownsample
     }
 
-    static func perform(
+    public static func perform(
         at url: URL,
         size: DownSamplingSize
     ) async throws -> CGImage {

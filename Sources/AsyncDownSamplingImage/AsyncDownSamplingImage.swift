@@ -179,7 +179,7 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
         } else {
             status = .loading
         }
-        Task {
+        Task.detached {
             do {
                 let cgImage = try await DownSampling.perform(
                     at: url,
@@ -188,9 +188,13 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
                 let image = ImageType(
                     cgImage: cgImage
                 )
-                status = .loaded(Image(imageType: image))
+                await MainActor.run {
+                    status = .loaded(Image(imageType: image))
+                }
             } catch {
-                status = .failed(error)
+                await MainActor.run {
+                    status = .failed(error)
+                }
             }
         }
     }

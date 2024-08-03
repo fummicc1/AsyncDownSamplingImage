@@ -18,9 +18,9 @@ struct ExampleApp: App {
                 }
                 .tabItem {
                     Image(systemName: "1.circle")
-                    Text("Grid")
+                    Text("DownsamplingGrid")
                 }
-                .tag("Grid")
+                .tag("DownsamplingGrid")
                 VStack {
                     StandardView_VStack()
                     DownSamplingVStackView()
@@ -30,6 +30,15 @@ struct ExampleApp: App {
                     Text("VStack")
                 }
                 .tag("VStack")
+                VStack {
+                    DownsampleGridView()
+                    IncrementalGridView()
+                }
+                .tabItem {
+                    Image(systemName: "3.circle")
+                    Text("IncrementalGrid")
+                }
+                .tag("IncrementalGrid")
             }
         }
     }
