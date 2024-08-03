@@ -24,7 +24,6 @@ struct IncrementalGridView: View {
                         } label: {
                             IncrementalImage(
                                 url: $url,
-                                bufferSize: 1024, // 1KB
                                 animation: .easeIn
                             )
                                 .frame(
