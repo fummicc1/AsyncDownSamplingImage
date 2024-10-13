@@ -42,6 +42,13 @@ public struct IncrementalImage: View {
 
     @MainActor @State private var image: CGImage?
 
+    @State private var lastUpdateTime: Date = Date()
+    @State private var pendingUpdate: CGImage?
+    @State private var isUpdating: Bool = false
+
+    // 20ms
+    let timing = 0.02
+
     public var body: some View {
         Group {
             if let image {
@@ -62,16 +69,48 @@ public struct IncrementalImage: View {
             try! await Incremental.perform(
                 at: url,
                 bufferSize: bufferSize,
-                onUpdate: { image in
-                    if let animation {
-                        withAnimation(animation) {
-                            self.image = image
-                        }
-                    } else {
-                        self.image = image
-                    }
+                onUpdate: { newImage in
+                    throttledUpdate(newImage)
                 }
             )
+        }
+    }
+
+    private func throttledUpdate(_ newImage: CGImage) {
+        let currentTime = Date()
+        if currentTime.timeIntervalSince(lastUpdateTime) >= timing {
+            performUpdate(newImage)
+            lastUpdateTime = currentTime
+        } else {
+            pendingUpdate = newImage
+            if !isUpdating {
+                isUpdating = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + timing) {
+                    if let pendingImage = self.pendingUpdate {
+                        self.performUpdate(pendingImage)
+                    }
+                    self.isUpdating = false
+                    self.pendingUpdate = nil
+                }
+            }
+        }
+    }
+
+    private func performUpdate(_ newImage: CGImage) {
+        if let animation {
+            withAnimation(animation) {
+                self.image = newImage
+            }
+        } else {
+            self.image = newImage
+        }
+    }
+
+    private func throttle(_ block: @escaping () -> Void) {
+        let currentTime = Date()
+        if currentTime.timeIntervalSince(lastUpdateTime) >= timing {
+            block()
+            lastUpdateTime = currentTime
         }
     }
 
