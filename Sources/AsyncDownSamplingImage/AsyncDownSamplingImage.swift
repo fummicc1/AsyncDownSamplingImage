@@ -66,7 +66,7 @@ public enum DownSamplingSize {
     }
 }
 
-/// AsyncDownSamplingImage is a Image View that can perform downsampling and use less memory use than `AsyncImage`.
+/// AsyncDownSamplingImage is a ImageView that can perform downsampling and use less memory use than `AsyncImage`.
 ///
 /// About generics type:
 ///
@@ -92,7 +92,7 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
     @State private var status: Status = .idle
     @State private var loadingOpacity: LoadingOpacityEdge = .upperBound
 
-    /// A initializer that requires exact downSampling size.
+    /// A initializer that requires exact downsampling size.
     ///
     /// - Parameters:
     ///     - url: a resource url which should be downsampled.
