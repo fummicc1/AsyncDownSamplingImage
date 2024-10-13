@@ -184,9 +184,23 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
                     at: url,
                     size: downsampleSize
                 )
+            #if os(macOS)
+                let aspectRatio = Double(cgImage.height) / Double(cgImage.width)
+                let downsampleSize = await self.downsampleSize
+                let width = downsampleSize.width ?? downsampleSize.height! / aspectRatio
+                let height = downsampleSize.height ?? downsampleSize.width! * aspectRatio
+                let image = ImageType(
+                    cgImage: cgImage,
+                    size: CGSize(
+                        width: width,
+                        height: height
+                    )
+                )
+#elseif os(iOS)
                 let image = ImageType(
                     cgImage: cgImage
                 )
+                #endif
                 await MainActor.run {
                     status = .loaded(Image(imageType: image))
                 }
