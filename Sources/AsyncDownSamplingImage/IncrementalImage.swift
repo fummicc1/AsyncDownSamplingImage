@@ -14,7 +14,7 @@ import SwiftUI
 ///
 /// - Parameters:
 ///   - url: A binding to the URL from which the image will be fetched. This URL can be changed dynamically.
-///   - bufferSize: The size of the buffer in bytes used for incremental loading. The default value is 32KB.
+///   - bufferSize: The size of the buffer in bytes used for incremental loading. The default value is 1KB.
 ///
 /// The view displays a `EmptyView` while the image is being fetched. Once the image is fully loaded, it is displayed using an `Image` view.
 ///
@@ -35,7 +35,7 @@ public struct IncrementalImage: View {
 
     /// unit byte size to perform incremental image
     ///
-    /// example: `32 * 1024 ... 32KB`
+    /// example: `1 * 1024 ... 1KB`
     public let bufferSize: Int
 
     public let animation: Animation?
@@ -75,7 +75,7 @@ public struct IncrementalImage: View {
         }
     }
 
-    public init(url: Binding<URL?>, bufferSize: Int = 32 * 1024, animation: Animation? = nil) {
+    public init(url: Binding<URL?>, bufferSize: Int = 1 * 1024, animation: Animation? = nil) {
         self._url = url
         self.bufferSize = bufferSize
         self.animation = animation
