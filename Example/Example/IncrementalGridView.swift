@@ -15,7 +15,7 @@ struct IncrementalGridView: View {
 
     var body: some View {
         VStack {
-            Text("Image")
+            Text("IncrementalImage")
             ScrollView {
                 LazyVGrid(columns: [.init(), .init()]) {
                     ForEach(0..<1000, id: \.self) { _ in
