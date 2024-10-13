@@ -68,11 +68,10 @@ public enum DownSamplingSize {
 
 /// AsyncDownSamplingImage is a ImageView that can perform downsampling and use less memory use than `AsyncImage`.
 ///
-/// About generics type:
-///
-///    - Content: View which appears when state is Successful.
-///    - Placeholder: View which appears when state is Loading.
-///    - Fail: View which appears when state is Failed.
+/// Generic Types:
+/// - `Content`: The view displayed when the image is successfully loaded.
+/// - `Placeholder`: The view displayed while the image is loading.
+/// - `Fail`: The view displayed when the image fails to load.
 public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: View>: View {
 
     /// resource URL where you would like to fetch an image.
@@ -85,7 +84,7 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
     /// View which appears when `status` is `Status.loaded`.
     public let content: (Image) -> Content
     /// View which appears when `status` is `Status.loading`.
-    public let onLoading: (() -> Placeholder)?
+    public let onLoad: (() -> Placeholder)?
     /// View which appears when `status` is `Status.failed`.
     public let onFail: (any Error) -> Fail
 
@@ -99,19 +98,19 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
     ///     - downSamplingSize: final image buffer size after downsampling.
     ///         choose from ``DownSamplingSize.width``, ``DownSamplingSize.height`` or ``DownSamplingSize.size``
     ///     - content: UI builder which takes ``Image`` as an argument after image is fetched and downsampled.
-    ///     - onLoading: UI builder used when ``Image`` is loading or in downsampling phase.
+    ///     - onLoad: UI builder used when ``Image`` is loading or in downsampling phase.
     ///     - onFail: UI builder used when something wrong happened in downsampling phase.
     public init(
         url: Binding<URL?>,
         downsampleSize: Binding<DownSamplingSize>,
         content: @escaping (Image) -> Content,
-        onLoading: @escaping () -> Placeholder,
+        onLoad: @escaping () -> Placeholder,
         onFail: @escaping (any Error) -> Fail
     ) {
         self._url = url
         self._downsampleSize = downsampleSize
         self.content = content
-        self.onLoading = onLoading
+        self.onLoad = onLoad
         self.onFail = onFail
         self.status = status
 
@@ -142,8 +141,8 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
         case .idle:
             loadingView
         case .loading:
-            if let onLoading {
-                onLoading()
+            if let onLoad {
+                onLoad()
             } else {
                 loadingView
             }
@@ -179,18 +178,36 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
         } else {
             status = .loading
         }
-        Task {
+        Task.detached {
             do {
                 let cgImage = try await DownSampling.perform(
                     at: url,
                     size: downsampleSize
                 )
+            #if os(macOS)
+                let aspectRatio = Double(cgImage.height) / Double(cgImage.width)
+                let downsampleSize = await self.downsampleSize
+                let width = downsampleSize.width ?? downsampleSize.height! / aspectRatio
+                let height = downsampleSize.height ?? downsampleSize.width! * aspectRatio
+                let image = ImageType(
+                    cgImage: cgImage,
+                    size: CGSize(
+                        width: width,
+                        height: height
+                    )
+                )
+#elseif os(iOS)
                 let image = ImageType(
                     cgImage: cgImage
                 )
-                status = .loaded(Image(imageType: image))
+                #endif
+                await MainActor.run {
+                    status = .loaded(Image(imageType: image))
+                }
             } catch {
-                status = .failed(error)
+                await MainActor.run {
+                    status = .failed(error)
+                }
             }
         }
     }
@@ -217,7 +234,7 @@ extension AsyncDownSamplingImage {
         self._url = .constant(url)
         self._downsampleSize = downsampleSize
         self.content = content
-        self.onLoading = nil
+        self.onLoad = nil
         self.onFail = onFail
         self.status = status
     }
@@ -231,7 +248,7 @@ extension AsyncDownSamplingImage {
         self._url = .constant(url)
         self._downsampleSize = .constant(downsampleSize)
         self.content = content
-        self.onLoading = nil
+        self.onLoad = nil
         self.onFail = onFail
         self.status = status
     }
@@ -246,7 +263,7 @@ extension AsyncDownSamplingImage {
         self._url = .constant(url)
         self._downsampleSize = downsampleSize
         self.content = content
-        self.onLoading = placeholder
+        self.onLoad = placeholder
         self.onFail = onFail
         self.status = status
     }
@@ -255,13 +272,13 @@ extension AsyncDownSamplingImage {
         url: URL?,
         downsampleSize: DownSamplingSize,
         content: @escaping (Image) -> Content,
-        onLoading: @escaping () -> Placeholder,
+        onLoad: @escaping () -> Placeholder,
         onFail: @escaping (any Error) -> Fail
     ) {
         self._url = .constant(url)
         self._downsampleSize = .constant(downsampleSize)
         self.content = content
-        self.onLoading = onLoading
+        self.onLoad = onLoad
         self.onFail = onFail
         self.status = status
     }

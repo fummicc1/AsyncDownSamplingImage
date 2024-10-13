@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		D30592B4298C9F830060D5EE /* AsyncDownSamplingImage in Frameworks */ = {isa = PBXBuildFile; productRef = D30592B3298C9F830060D5EE /* AsyncDownSamplingImage */; };
+		D345E3CC2C5DE4AC008DEE2D /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D345E3CB2C5DE4AC008DEE2D /* ImageDetailView.swift */; };
+		D345E3CE2C5E072F008DEE2D /* IncrementalGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D345E3CD2C5E072F008DEE2D /* IncrementalGridView.swift */; };
 		D36AB81B2C38C38500F37D8F /* DownsampleGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D36AB81A2C38C38500F37D8F /* DownsampleGridView.swift */; };
 		D36AB81D2C38C3F900F37D8F /* DownSamplingVStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D36AB81C2C38C3F900F37D8F /* DownSamplingVStackView.swift */; };
 		D36AB81F2C38C48400F37D8F /* StandardView+Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D36AB81E2C38C48400F37D8F /* StandardView+Grid.swift */; };
@@ -20,6 +22,8 @@
 
 /* Begin PBXFileReference section */
 		D30592B1298C9F7F0060D5EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D345E3CB2C5DE4AC008DEE2D /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
+		D345E3CD2C5E072F008DEE2D /* IncrementalGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalGridView.swift; sourceTree = "<group>"; };
 		D36AB81A2C38C38500F37D8F /* DownsampleGridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownsampleGridView.swift; sourceTree = "<group>"; };
 		D36AB81C2C38C3F900F37D8F /* DownSamplingVStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownSamplingVStackView.swift; sourceTree = "<group>"; };
 		D36AB81E2C38C48400F37D8F /* StandardView+Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StandardView+Grid.swift"; sourceTree = "<group>"; };
@@ -78,6 +82,8 @@
 				D36AB81A2C38C38500F37D8F /* DownsampleGridView.swift */,
 				D36AB81C2C38C3F900F37D8F /* DownSamplingVStackView.swift */,
 				D3E99FFD298C9EEF006E08E2 /* ExampleApp.swift */,
+				D345E3CB2C5DE4AC008DEE2D /* ImageDetailView.swift */,
+				D345E3CD2C5E072F008DEE2D /* IncrementalGridView.swift */,
 				D36AB81E2C38C48400F37D8F /* StandardView+Grid.swift */,
 				D36AB8202C38C4AB00F37D8F /* StandardView+VStack.swift */,
 				D36AB8222C38C74300F37D8F /* Util.swift */,
@@ -177,11 +183,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D36AB81B2C38C38500F37D8F /* DownsampleGridView.swift in Sources */,
+				D345E3CC2C5DE4AC008DEE2D /* ImageDetailView.swift in Sources */,
 				D36AB8232C38C74300F37D8F /* Util.swift in Sources */,
 				D36AB81D2C38C3F900F37D8F /* DownSamplingVStackView.swift in Sources */,
 				D36AB81F2C38C48400F37D8F /* StandardView+Grid.swift in Sources */,
 				D36AB8212C38C4AB00F37D8F /* StandardView+VStack.swift in Sources */,
 				D3E99FFE298C9EEF006E08E2 /* ExampleApp.swift in Sources */,
+				D345E3CE2C5E072F008DEE2D /* IncrementalGridView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,7 +339,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -370,7 +378,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
