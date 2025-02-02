@@ -5,7 +5,7 @@ struct DownsampleGridView: View {
 
     @State private var url = Util.Grid.url
     @State private var showsDetail: Bool = false
-    @State private var size: CGSize = .init(width: 160, height: 160)
+    @State private var height: Double = 160
 
     var body: some View {
         VStack {
@@ -18,13 +18,12 @@ struct DownsampleGridView: View {
                         } label: {
                             AsyncDownSamplingImage(
                                 url: url,
-                                downsampleSize: .size(Util.Grid.bufferedImageSize)
+                                downsampleSize: .height(height)
                             ) { image in
                                 image.resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(
-                                        width: size.width,
-                                        height: size.height
+                                        height: height
                                     )
                             } onFail: { error in
                                 Text("Error: \(error.localizedDescription)")
