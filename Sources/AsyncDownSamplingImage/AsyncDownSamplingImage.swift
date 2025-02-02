@@ -163,8 +163,9 @@ public struct AsyncDownSamplingImage<Content: View, Placeholder: View, Fail: Vie
                 value: loadingOpacity
             )
             .frame(
-                width: downsampleSize.size.width,
-                height: downsampleSize.size.height
+                // If both width and height are not provided, treat loading image as square.
+                width: downsampleSize.size.width ?? downsampleSize.size.height,
+                height: downsampleSize.size.height ?? downsampleSize.size.width
             )
             .redacted(reason: .placeholder)
             .onAppear {
